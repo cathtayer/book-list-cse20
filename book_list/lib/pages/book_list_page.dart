@@ -1,22 +1,51 @@
 import 'package:flutter/material.dart';
 import '../models/book.dart';
 
-class BookListPage extends StatelessWidget {
+class BookListPage extends StatefulWidget {
   const BookListPage({super.key});
 
   @override
+  State<BookListPage> createState() => _BookListPageState();
+}
+
+class _BookListPageState extends State<BookListPage> {
+  bool _isSorted = false;
+
+  @override
   Widget build(BuildContext context) {
+    // Clone and optionally sort the list
+    final displayedBooks = List<Book>.from(books);
+    if (_isSorted) {
+      displayedBooks.sort(
+        (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.grey[900],
       appBar: AppBar(
         title: const Text("Library", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.black,
+        actions: [
+          IconButton(
+            icon: Icon(
+              _isSorted ? Icons.sort_by_alpha : Icons.sort,
+              color: Colors.white,
+            ),
+            tooltip: _isSorted ? 'Unsort' : 'Sort A–Z',
+            onPressed: () {
+              setState(() {
+                _isSorted = !_isSorted;
+              });
+            },
+          ),
+        ],
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(12),
-        itemCount: books.length,
+        itemCount: displayedBooks.length,
         itemBuilder: (context, index) {
-          final book = books[index];
+          final book = displayedBooks[index];
           return Container(
             margin: const EdgeInsets.only(bottom: 12),
             decoration: BoxDecoration(
